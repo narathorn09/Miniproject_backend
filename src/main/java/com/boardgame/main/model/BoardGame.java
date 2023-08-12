@@ -2,11 +2,13 @@ package com.boardgame.main.model;
 
 import com.mysql.cj.jdbc.Blob;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.Lob;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
@@ -17,11 +19,18 @@ public class BoardGame {
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long gameID;
 	private String title;
+	
+	@Column(length = 1000) 
 	private String description;
+	
 	private String photoName;
-	private java.sql.Blob photoData;
-	private Integer adminRating;
-	private Integer averageRating;
+	
+	@Lob
+	@Column(length = 3048576)
+	private byte[] photoData;
+	
+	private Float adminRating;
+	private Float averageRating;
 	
 	@ManyToOne
     @JoinColumn(name = "userID")
@@ -31,8 +40,8 @@ public class BoardGame {
 		super();
 	}
 
-	public BoardGame(Long gameID, String title, String description, String photoName, Blob photoData,
-			Integer adminRating, Integer averageRating, User user) {
+	public BoardGame(Long gameID, String title, String description, String photoName, byte[] photoData,
+			Float adminRating, Float averageRating, User user) {
 		super();
 		this.gameID = gameID;
 		this.title = title;
@@ -76,27 +85,27 @@ public class BoardGame {
 		this.photoName = photoName;
 	}
 
-	public java.sql.Blob getPhotoData() {
+	public byte[] getPhotoData() {
 		return photoData;
 	}
 
-	public void setPhotoData(Blob photoData) {
+	public void setPhotoData(byte[] photoData) {
 		this.photoData = photoData;
 	}
 
-	public Integer getAdminRating() {
+	public Float getAdminRating() {
 		return adminRating;
 	}
 
-	public void setAdminRating(Integer adminRating) {
+	public void setAdminRating(Float adminRating) {
 		this.adminRating = adminRating;
 	}
 
-	public Integer getAverageRating() {
+	public Float getAverageRating() {
 		return averageRating;
 	}
 
-	public void setAverageRating(Integer averageRating) {
+	public void setAverageRating(Float averageRating) {
 		this.averageRating = averageRating;
 	}
 
@@ -107,6 +116,8 @@ public class BoardGame {
 	public void setUser(User user) {
 		this.user = user;
 	}
+	
+	
 	
 	
 }
