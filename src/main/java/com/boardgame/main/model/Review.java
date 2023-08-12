@@ -1,6 +1,6 @@
 package com.boardgame.main.model;
 
-import java.sql.Date;
+import java.sql.Timestamp;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -17,9 +17,10 @@ public class Review {
 	@Id
 	@GeneratedValue( strategy = GenerationType.AUTO)
 	private Long reviewID;
-	private int rating;
+	private Float rating;
 	private String comment;
-	private Date timestamp;
+	
+	private Timestamp timestamp;
 	
     @ManyToOne
     @JoinColumn(name = "gameID")
@@ -33,7 +34,7 @@ public class Review {
 		super();
 	}
 
-	public Review(Long reviewID, int rating, String comment, Date timestamp, BoardGame game, User user) {
+	public Review(Long reviewID, Float rating, String comment, Timestamp timestamp, BoardGame game, User user) {
 		super();
 		this.reviewID = reviewID;
 		this.rating = rating;
@@ -51,11 +52,11 @@ public class Review {
 		this.reviewID = reviewID;
 	}
 
-	public int getRating() {
+	public Float getRating() {
 		return rating;
 	}
 
-	public void setRating(int rating) {
+	public void setRating(Float rating) {
 		this.rating = rating;
 	}
 
@@ -67,11 +68,11 @@ public class Review {
 		this.comment = comment;
 	}
 
-	public Date getTimestamp() {
+	public Timestamp getTimestamp() {
 		return timestamp;
 	}
 
-	public void setTimestamp(Date timestamp) {
+	public void setTimestamp(Timestamp timestamp) {
 		this.timestamp = timestamp;
 	}
 
@@ -90,6 +91,5 @@ public class Review {
 	public void setUser(User user) {
 		this.user = user;
 	}
-    
     
 }

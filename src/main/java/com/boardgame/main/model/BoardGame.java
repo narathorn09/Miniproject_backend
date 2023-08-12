@@ -1,7 +1,5 @@
 package com.boardgame.main.model;
 
-import com.mysql.cj.jdbc.Blob;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;

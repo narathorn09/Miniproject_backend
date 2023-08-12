@@ -1,6 +1,7 @@
 package com.boardgame.main.controller;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -14,7 +15,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
@@ -24,7 +24,7 @@ import com.boardgame.main.model.User;
 import com.boardgame.main.repository.BoardGameRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-@CrossOrigin(origins = "http://localhost:8081")
+@CrossOrigin(origins = "http://localhost:3000")
 @RestController
 public class BoardGameController {
 
@@ -39,8 +39,29 @@ public class BoardGameController {
 	public ResponseEntity<Object> getBoardGames() {
 		
 		try {
-			List<BoardGame> listBoardGames = boardGameRepository.findAll();
-			return new ResponseEntity<>(listBoardGames, HttpStatus.OK);
+			List<BoardGame> listBoardGames = boardGameRepository.findAllBoardGame();
+			List<BoardGame> boardGames = new ArrayList<>();
+
+		    for (BoardGame row : listBoardGames) {
+		    	 // Ensure that the array has at least 7 elements
+		            Long gameID = row.getGameID();
+		            String title = row.getTitle();
+		            String description = row.getDescription();
+		            String photoName = row.getPhotoName();
+		            byte[] photoData = row.getPhotoData();
+		            Float adminRating = row.getAdminRating();
+		            Float averageRating = row.getAverageRating();
+		            User user = row.getUser();
+		            
+		            user.setPassword(null);
+		            user.setUsername(null);
+		            user.setUserType(null);
+		            
+		      		BoardGame boardGame = new BoardGame(gameID, title, description, photoName, photoData, adminRating, averageRating, user);
+
+		            boardGames.add(boardGame);
+			    }
+			return new ResponseEntity<>(boardGames, HttpStatus.OK);
 		}catch (Exception e) {
 			System.out.println(e.getMessage());
 			return new ResponseEntity<>("Internal server error.", HttpStatus.INTERNAL_SERVER_ERROR);
@@ -163,6 +184,26 @@ public class BoardGameController {
 			return new ResponseEntity<>("Internal server error.", HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 			
+	}
+	
+	@GetMapping("/searchBoardGame")
+	public ResponseEntity<Object> searchBoardGames(@RequestParam("title") String title) {
+		
+		try {
+			List<BoardGame> boardgameFound = boardGameRepository.findBoardGameByTitle(title);
+			
+			if(!boardgameFound.isEmpty()) {
+				return new ResponseEntity<>(boardgameFound, HttpStatus.OK);
+
+			}else {
+				return new ResponseEntity<>(new ArrayList<>(), HttpStatus.OK);
+			}
+			
+		}catch (Exception e) {
+			System.out.println(e.getMessage());
+			return new ResponseEntity<>("Internal server error.", HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+		
 	}
 	
 
