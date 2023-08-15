@@ -115,7 +115,4 @@ public class BoardGame {
 		this.user = user;
 	}
 	
-	
-	
-	
 }

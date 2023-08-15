@@ -43,7 +43,6 @@ public class BoardGameController {
 			List<BoardGame> boardGames = new ArrayList<>();
 
 		    for (BoardGame row : listBoardGames) {
-		    	 // Ensure that the array has at least 7 elements
 		            Long gameID = row.getGameID();
 		            String title = row.getTitle();
 		            String description = row.getDescription();

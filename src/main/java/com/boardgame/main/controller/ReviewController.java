@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.boardgame.main.model.BoardGame;
 import com.boardgame.main.model.Review;
 import com.boardgame.main.model.User;
 import com.boardgame.main.repository.ReviewRepository;
@@ -93,8 +94,23 @@ public class ReviewController {
 				
 				Timestamp now = new Timestamp(System.currentTimeMillis());
 				reviewEdit.setTimestamp(now);
-				reviewEdit.setGame(null);
-				reviewEdit.setUser(null);
+				
+				BoardGame boardGame = body.getGame();
+				boardGame.setTitle(null);
+				boardGame.setAdminRating(null);
+				boardGame.setAverageRating(null);
+				boardGame.setDescription(null);
+				boardGame.setPhotoData(null);
+				boardGame.setPhotoName(null);
+				boardGame.setUser(null);
+			
+				User user = body.getUser();
+				user.setUsername(null);
+				user.setPassword(null);
+				user.setUserType(null);
+				
+				reviewEdit.setGame(boardGame);
+				reviewEdit.setUser(user);
 				
 				reviewRepository.save(reviewEdit);
 				
