@@ -154,10 +154,10 @@ public class UserController {
 			Optional<User> userFound = userRepository.findByUsername(username);
 
 			if (userFound.isPresent()) {
-				return new ResponseEntity<>("User Found.", HttpStatus.OK);
+				return new ResponseEntity<>(true, HttpStatus.OK);
 
 			} else {
-				return new ResponseEntity<>("User Not Found.", HttpStatus.BAD_REQUEST);
+				return new ResponseEntity<>(false, HttpStatus.OK);
 			}
 
 		} catch (Exception e) {
