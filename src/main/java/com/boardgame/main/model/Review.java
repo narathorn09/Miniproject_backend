@@ -1,6 +1,6 @@
 package com.boardgame.main.model;
 
-import java.sql.Date;
+import java.sql.Timestamp;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -11,29 +11,30 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
 @Entity
-@Table( name = "Review" )
+@Table(name = "Review")
 public class Review {
-	
-	@Id
-	@GeneratedValue( strategy = GenerationType.AUTO)
-	private Long reviewID;
-	private int rating;
-	private String comment;
-	private Date timestamp;
-	
-    @ManyToOne
-    @JoinColumn(name = "gameID")
-    private BoardGame game;
 
-    @ManyToOne
-    @JoinColumn(name = "userID")
-    private User user;
-    
+	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	private Long reviewID;
+	private Float rating;
+	private String comment;
+
+	private Timestamp timestamp;
+
+	@ManyToOne
+	@JoinColumn(name = "gameID")
+	private BoardGame game;
+
+	@ManyToOne
+	@JoinColumn(name = "userID")
+	private User user;
+
 	public Review() {
 		super();
 	}
 
-	public Review(Long reviewID, int rating, String comment, Date timestamp, BoardGame game, User user) {
+	public Review(Long reviewID, Float rating, String comment, Timestamp timestamp, BoardGame game, User user) {
 		super();
 		this.reviewID = reviewID;
 		this.rating = rating;
@@ -51,11 +52,11 @@ public class Review {
 		this.reviewID = reviewID;
 	}
 
-	public int getRating() {
+	public Float getRating() {
 		return rating;
 	}
 
-	public void setRating(int rating) {
+	public void setRating(Float rating) {
 		this.rating = rating;
 	}
 
@@ -67,11 +68,11 @@ public class Review {
 		this.comment = comment;
 	}
 
-	public Date getTimestamp() {
+	public Timestamp getTimestamp() {
 		return timestamp;
 	}
 
-	public void setTimestamp(Date timestamp) {
+	public void setTimestamp(Timestamp timestamp) {
 		this.timestamp = timestamp;
 	}
 
@@ -90,6 +91,5 @@ public class Review {
 	public void setUser(User user) {
 		this.user = user;
 	}
-    
-    
+
 }
