@@ -38,15 +38,15 @@ public class ReviewController {
 		List<Object[]> listReviews = reviewRepository.findReviewByGameId(gameID);
 		List<Review> reviews = new ArrayList<>();
 		Float averageRating;
-		
+
 		for (Object[] row : listReviews) {
-			
+
 			Long reviewID = (Long) row[0];
 			Float rating = (Float) row[1];
 			String comment = (String) row[2];
 			Timestamp timestamp = (Timestamp) row[3];
 			User user = (User) row[4];
-			
+
 			Review review = new Review(reviewID, rating, comment, timestamp, null, user);
 			reviews.add(review);
 		}
@@ -63,11 +63,11 @@ public class ReviewController {
 
 		Optional<BoardGame> boardgameFound = boardGameRepository.findById(gameID);
 		if (boardgameFound.isPresent()) {
-			
+
 			BoardGame boardGame = boardgameFound.get();
 			boardGame.setAverageRating(averageRating);
 			boardGameRepository.save(boardGame);
-			
+
 		}
 
 	}
@@ -159,9 +159,9 @@ public class ReviewController {
 				reviewEdit.setUser(user);
 
 				reviewRepository.save(reviewEdit);
-				
+
 				updateAverageRating(boardGame.getGameID());
-				
+
 				return new ResponseEntity<>(reviewEdit, HttpStatus.OK);
 
 			} else {
@@ -176,7 +176,8 @@ public class ReviewController {
 	}
 
 	@DeleteMapping("/review/{gameID}/{reviewID}")
-	public ResponseEntity<Object> deleteReviewById(@PathVariable("gameID") Long gameID, @PathVariable("reviewID") Long reviewID) {
+	public ResponseEntity<Object> deleteReviewById(@PathVariable("gameID") Long gameID,
+			@PathVariable("reviewID") Long reviewID) {
 
 		try {
 

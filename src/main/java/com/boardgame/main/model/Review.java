@@ -12,25 +12,25 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
 @Entity
-@Table( name = "Review" )
+@Table(name = "Review")
 public class Review {
-	
+
 	@Id
-	@GeneratedValue( strategy = GenerationType.AUTO)
+	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long reviewID;
 	private Float rating;
 	private String comment;
-	
+
 	private Timestamp timestamp;
-	
-	@ManyToOne
-    @JoinColumn(name = "gameID")
-    private BoardGame game;
 
 	@ManyToOne
-    @JoinColumn(name = "userID")
-    private User user;
-    
+	@JoinColumn(name = "gameID")
+	private BoardGame game;
+
+	@ManyToOne
+	@JoinColumn(name = "userID")
+	private User user;
+
 	public Review() {
 		super();
 	}
@@ -92,5 +92,5 @@ public class Review {
 	public void setUser(User user) {
 		this.user = user;
 	}
-    
+
 }

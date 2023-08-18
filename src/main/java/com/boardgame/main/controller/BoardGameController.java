@@ -177,7 +177,7 @@ public class BoardGameController {
 			Optional<BoardGame> boardgameFound = boardGameRepository.findById(gameID);
 
 			if (boardgameFound.isPresent()) {
-				
+
 				List<Object[]> listReviews = reviewRepository.findReviewByGameId(gameID);
 
 				for (Object[] row : listReviews) {
@@ -192,7 +192,7 @@ public class BoardGameController {
 					reviewRepository.delete(review);
 
 				}
-				
+
 				boardGameRepository.delete(boardgameFound.get());
 
 				return new ResponseEntity<>("Delete Board Game Success.", HttpStatus.OK);
