@@ -1,6 +1,7 @@
 package com.boardgame.main.controller;
 
 import java.io.IOException;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -20,8 +21,10 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.boardgame.main.model.BoardGame;
+import com.boardgame.main.model.Review;
 import com.boardgame.main.model.User;
 import com.boardgame.main.repository.BoardGameRepository;
+import com.boardgame.main.repository.ReviewRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @CrossOrigin(origins = "http://localhost:3000")
@@ -30,116 +33,119 @@ public class BoardGameController {
 
 	@Autowired
 	BoardGameRepository boardGameRepository;
-	
+
+	@Autowired
+	ReviewRepository reviewRepository;
+
 	public BoardGameController(BoardGameRepository boardGameRepository) {
-        this.boardGameRepository = boardGameRepository;
-    }
-	
+		this.boardGameRepository = boardGameRepository;
+	}
+
 	@GetMapping("/boardgame")
 	public ResponseEntity<Object> getBoardGames() {
-		
+
 		try {
 			List<BoardGame> listBoardGames = boardGameRepository.findAllBoardGame();
 			List<BoardGame> boardGames = new ArrayList<>();
 
-		    for (BoardGame row : listBoardGames) {
-		            Long gameID = row.getGameID();
-		            String title = row.getTitle();
-		            String description = row.getDescription();
-		            String photoName = row.getPhotoName();
-		            byte[] photoData = row.getPhotoData();
-		            Float adminRating = row.getAdminRating();
-		            Float averageRating = row.getAverageRating();
-		            User user = row.getUser();
-		            
-		            user.setPassword(null);
-		            user.setUsername(null);
-		            user.setUserType(null);
-		            
-		      		BoardGame boardGame = new BoardGame(gameID, title, description, photoName, photoData, adminRating, averageRating, user);
+			for (BoardGame row : listBoardGames) {
+				Long gameID = row.getGameID();
+				String title = row.getTitle();
+				String description = row.getDescription();
+				String photoName = row.getPhotoName();
+				byte[] photoData = row.getPhotoData();
+				Float adminRating = row.getAdminRating();
+				Float averageRating = row.getAverageRating();
+				User user = row.getUser();
 
-		            boardGames.add(boardGame);
-			    }
-			return new ResponseEntity<>(boardGames, HttpStatus.OK);
-		}catch (Exception e) {
-			System.out.println(e.getMessage());
-			return new ResponseEntity<>("Internal server error.", HttpStatus.INTERNAL_SERVER_ERROR);
-		}
-		
-	}
-	
-	@PostMapping(value = "/boardgame", consumes = {"multipart/form-data"})
-	public ResponseEntity<Object> createBoardGame(
-	        @RequestParam("body") String boardGameJson,
-	        @RequestParam("photo") MultipartFile photo) throws IOException {
+				user.setPassword(null);
+				user.setUsername(null);
+				user.setUserType(null);
 
-	    try {
-	        BoardGame body = new ObjectMapper().readValue(boardGameJson, BoardGame.class);
-	        
-	        if(!photo.isEmpty()) {
-	        	String photoName = UUID.randomUUID().toString() + ".png";
-	        	body.setPhotoName(photoName);
-		        body.setPhotoData(photo.getBytes());
-	        }
-	        
-	        BoardGame newBoardGame = boardGameRepository.save(body);
-	        return new ResponseEntity<>(newBoardGame, HttpStatus.CREATED);
-	    } catch (IOException e) {
-	        e.printStackTrace();
-	        return new ResponseEntity<>("Error processing the photo.", HttpStatus.INTERNAL_SERVER_ERROR);
-	    } catch (Exception e) {
-	        e.printStackTrace();
-	        return new ResponseEntity<>("Internal server error.", HttpStatus.INTERNAL_SERVER_ERROR);
-	    }
-	}
+				BoardGame boardGame = new BoardGame(gameID, title, description, photoName, photoData, adminRating,
+						averageRating, user);
 
-
-	@GetMapping("/boardgame/{gameID}")
-	public ResponseEntity<Object> getBoardGameById(@PathVariable("gameID") Long gameID) {
-		
-		try {	
-		
-			Optional<BoardGame> boardgameFound = boardGameRepository.findById(gameID);
-			if(boardgameFound.isPresent()) {
-				BoardGame boardGame = boardgameFound.get();
-				
-				User user = boardGame.getUser();
-	            user.setUsername(null);
-	            user.setPassword(null);
-	            user.setUserType(null);
-	            
-				return new ResponseEntity<>(boardGame, HttpStatus.OK);
-			}else {
-				return new ResponseEntity<>("Board Game Not Found.", HttpStatus.BAD_REQUEST);
+				boardGames.add(boardGame);
 			}
-			
-		}catch (Exception e) {
+			return new ResponseEntity<>(boardGames, HttpStatus.OK);
+		} catch (Exception e) {
 			System.out.println(e.getMessage());
 			return new ResponseEntity<>("Internal server error.", HttpStatus.INTERNAL_SERVER_ERROR);
 		}
-		
+
 	}
-	
-	@PutMapping(value = "/boardgame/{gameID}", consumes = {"multipart/form-data"})
-	public ResponseEntity<Object> updateBoardGame(
-			@PathVariable("gameID") Long gameID, 
-			@RequestParam("body") String boardGameJson, 
+
+	@PostMapping(value = "/boardgame", consumes = { "multipart/form-data" })
+	public ResponseEntity<Object> createBoardGame(@RequestParam("body") String boardGameJson,
 			@RequestParam("photo") MultipartFile photo) throws IOException {
 
 		try {
-			
+			BoardGame body = new ObjectMapper().readValue(boardGameJson, BoardGame.class);
+
+			if (!photo.isEmpty()) {
+				String photoName = UUID.randomUUID().toString() + ".png";
+				body.setPhotoName(photoName);
+				body.setPhotoData(photo.getBytes());
+			} else {
+				body.setPhotoName(null);
+				body.setPhotoData(null);
+			}
+
+			BoardGame newBoardGame = boardGameRepository.save(body);
+			return new ResponseEntity<>(newBoardGame, HttpStatus.CREATED);
+		} catch (IOException e) {
+			e.printStackTrace();
+			return new ResponseEntity<>("Error processing the photo.", HttpStatus.INTERNAL_SERVER_ERROR);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return new ResponseEntity<>("Internal server error.", HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+
+	@GetMapping("/boardgame/{gameID}")
+	public ResponseEntity<Object> getBoardGameById(@PathVariable("gameID") Long gameID) {
+
+		try {
+
 			Optional<BoardGame> boardgameFound = boardGameRepository.findById(gameID);
-			
-			if(boardgameFound.isPresent()) {
+			if (boardgameFound.isPresent()) {
+				BoardGame boardGame = boardgameFound.get();
+
+				User user = boardGame.getUser();
+				user.setUsername(null);
+				user.setPassword(null);
+				user.setUserType(null);
+
+				return new ResponseEntity<>(boardGame, HttpStatus.OK);
+			} else {
+				return new ResponseEntity<>("Board Game Not Found.", HttpStatus.BAD_REQUEST);
+			}
+
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+			return new ResponseEntity<>("Internal server error.", HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+
+	}
+
+	@PutMapping(value = "/boardgame/{gameID}", consumes = { "multipart/form-data" })
+	public ResponseEntity<Object> updateBoardGame(@PathVariable("gameID") Long gameID,
+			@RequestParam("body") String boardGameJson, @RequestParam("photo") MultipartFile photo) throws IOException {
+
+		try {
+
+			Optional<BoardGame> boardgameFound = boardGameRepository.findById(gameID);
+
+			if (boardgameFound.isPresent()) {
 				BoardGame body = new ObjectMapper().readValue(boardGameJson, BoardGame.class);
 				BoardGame boardgameEdit = boardgameFound.get();
-				
-				if(!photo.isEmpty()) {
-		        	String photoName = UUID.randomUUID().toString() + ".png";
-		        	body.setPhotoName(photoName);
-			        body.setPhotoData(photo.getBytes());
-		        }
-				
+
+				if (!photo.isEmpty()) {
+					String photoName = UUID.randomUUID().toString() + ".png";
+					body.setPhotoName(photoName);
+					body.setPhotoData(photo.getBytes());
+				}
+
 				boardgameEdit.setTitle(body.getTitle());
 				boardgameEdit.setDescription(body.getDescription());
 				boardgameEdit.setPhotoName(body.getPhotoName());
@@ -147,64 +153,79 @@ public class BoardGameController {
 				boardgameEdit.setAdminRating(body.getAdminRating());
 				boardgameEdit.setAverageRating(body.getAverageRating());
 				boardgameEdit.setUser(body.getUser());
-				
+
 				boardGameRepository.save(boardgameEdit);
-				
+
 				return new ResponseEntity<>(boardgameEdit, HttpStatus.OK);
-				
-			}else {
+
+			} else {
 				return new ResponseEntity<>("Board Game Not Found.", HttpStatus.BAD_REQUEST);
 			}
-			
-		}catch (Exception e) {
+
+		} catch (Exception e) {
 			System.out.println(e.getMessage());
 			return new ResponseEntity<>("Internal server error.", HttpStatus.INTERNAL_SERVER_ERROR);
 		}
-	
+
 	}
-	
+
 	@DeleteMapping("/boardgame/{gameID}")
 	public ResponseEntity<Object> deleteBoardGameById(@PathVariable("gameID") Long gameID) {
-		
+
 		try {
-			
+
 			Optional<BoardGame> boardgameFound = boardGameRepository.findById(gameID);
-			
-			if(boardgameFound.isPresent()) {
-				boardGameRepository.delete(boardgameFound.get());
-				return new ResponseEntity<>("Delete Board Game Success.", HttpStatus.OK);
+
+			if (boardgameFound.isPresent()) {
 				
-			}else {
+				List<Object[]> listReviews = reviewRepository.findReviewByGameId(gameID);
+
+				for (Object[] row : listReviews) {
+					Long reviewID = (Long) row[0];
+					Float rating = (Float) row[1];
+					String comment = (String) row[2];
+					Timestamp timestamp = (Timestamp) row[3];
+					User user = (User) row[4];
+
+					Review review = new Review(reviewID, rating, comment, timestamp, null, user);
+
+					reviewRepository.delete(review);
+
+				}
+				
+				boardGameRepository.delete(boardgameFound.get());
+
+				return new ResponseEntity<>("Delete Board Game Success.", HttpStatus.OK);
+
+			} else {
 				return new ResponseEntity<>("Board Game Not Found.", HttpStatus.BAD_REQUEST);
 			}
-			
-		}catch (Exception e) {
+
+		} catch (Exception e) {
 			System.out.println(e.getMessage());
 			return new ResponseEntity<>("Internal server error.", HttpStatus.INTERNAL_SERVER_ERROR);
 		}
-			
+
 	}
-	
+
 	@GetMapping("/searchBoardGame")
 	public ResponseEntity<Object> searchBoardGames(@RequestParam("title") String title) {
-		
+
 		try {
 			List<BoardGame> boardgameFound = boardGameRepository.findBoardGameByTitle(title);
-			
-			if(!boardgameFound.isEmpty()) {
+
+			if (!boardgameFound.isEmpty()) {
 				return new ResponseEntity<>(boardgameFound, HttpStatus.OK);
 
-			}else {
+			} else {
 				return new ResponseEntity<>(new ArrayList<>(), HttpStatus.OK);
 			}
-			
-		}catch (Exception e) {
+
+		} catch (Exception e) {
 			System.out.println(e.getMessage());
 			return new ResponseEntity<>("Internal server error.", HttpStatus.INTERNAL_SERVER_ERROR);
 		}
-		
-	}
-	
 
+	}
 
 }

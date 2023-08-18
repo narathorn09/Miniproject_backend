@@ -14,6 +14,9 @@ public interface ReviewRepository extends JpaRepository<Review, Long>{
 
 	@Query("SELECT r.reviewID, r.rating, r.comment, r.timestamp, r.user FROM Review r WHERE r.game.gameID = :gameID")
 	List<Object[]> findReviewByGameId(@Param("gameID") Long gameID);
+	
+	@Query("SELECT r.reviewID, r.rating, r.comment, r.timestamp, r.user FROM Review r WHERE r.user.userID = :userID")
+	List<Object[]> findReviewsByUserId(@Param("userID") Long userID);
 
 
 }

@@ -2,6 +2,7 @@ package com.boardgame.main.model;
 
 import java.sql.Timestamp;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -22,11 +23,11 @@ public class Review {
 	
 	private Timestamp timestamp;
 	
-    @ManyToOne
+	@ManyToOne
     @JoinColumn(name = "gameID")
     private BoardGame game;
 
-    @ManyToOne
+	@ManyToOne
     @JoinColumn(name = "userID")
     private User user;
     
